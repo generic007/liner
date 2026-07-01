@@ -1,12 +1,26 @@
 {
   "name": "Liner — Daily Micro-Journal",
   "short_name": "Liner",
-  "description": "A private, local-first daily micro-journal. One line a day, mood tracking, photos.",
+  "description": "A private, local-first daily micro-journal. One line a day, mood tracking, photos. No accounts, no cloud.",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#f5f0eb",
-  "theme_color": "#f5f0eb",
+  "theme_color": "#1a1a1e",
   "orientation": "portrait-primary",
   "categories": ["lifestyle", "productivity", "health"],
-  "lang": "en-US"
+  "lang": "en-US",
+  "icons": [
+    {
+      "src": "icons/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
 }

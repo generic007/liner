@@ -1,115 +1,139 @@
 # 📝 Liner — Private Daily Micro-Journal
 
-**One line a day. Zero cloud. Zero tracking. Yours only.**
+**Zero accounts. Zero cloud. Zero tracking. One line a day — yours only.**
 
-Liner is a local-first micro-journaling app designed for one thing: capturing one meaningful line per day. It's the "less is more" alternative to bloated journaling apps.
+Liner is a local-first micro-journaling PWA. Open a URL, write one line, pick a mood, optionally add a photo, close it. Everything stays on your device. No install, no signup, no subscription, no data collection.
 
-## Why Liner Exists
+## Why This Exists
 
-The Reddit analysis of 9,300+ "I wish there was an app" posts revealed:
+Existing journaling apps force tradeoffs nobody should have to make:
 
-- **7% explicitly want local-first tools** (640+ requests for apps that don't use cloud storage)
-- **Privacy is now a baseline requirement**, not a differentiator
-- **People are tired of over-engineered apps** — they want one thing done well
-- **Micro-journaling has 5x retention** over traditional journaling (write one line vs. write paragraphs)
+| App | Problem |
+|-----|---------|
+| **Day One** ($35-50/yr) | Subscription-walled, Apple-centric, complex |
+| **Daylio** ($3-6/mo) | Text-free only, mobile-only, no real writing |
+| **Journey** ($40/yr) | Cloud-dependent, account required |
+| **Apple Journal** | iOS only, ecosystem lock-in |
+| **DayGram** | No insights, no photos, 140 char limit, ads |
 
-Existing options are either too complex (Day One, Journey) or too basic with no insights. Liner fills the gap: beautiful, private, insightful, and stays on your device.
+Liner fills the gap no one else occupies:
+
+> ✅ **Web-based** — open any browser, no install  
+> ✅ **100% local-first** — IndexedDB, zero servers, zero exfiltration  
+> ✅ **PWA** — installable on any device, works offline  
+> ✅ **Text + mood + photo** — complete micro-entry  
+> ✅ **Mood insights + search + On This Day** — smart, not bloated  
+> ✅ **Zero cost forever** — no subscription, no ads, no accounts  
+> ✅ **Desktop + mobile responsive** — one URL, any device  
 
 ## Features
 
-### ✏️ Daily Entry
+### ✏️ Today
 - Write one line up to 500 characters
-- Optional mood emoji per entry (😄🙂😐😕😢)
-- Real-time character count
+- 8 mood emoji options (😄🙂😐😕😢😤🤩🥱)
+- Optional photo upload with automatic compression
 - Auto-saves on page close
+- Recent entries sidebar
 
-### 📅 Calendar View
-- Full month calendar with mood-colored heat map
-- Click any day to view entry
-- Track your writing consistency at a glance
+### 📅 Calendar
+- Full month view with mood-colored heat map
+- Click any day to read the entry
+- Navigate between months
 
 ### 📊 Mood Insights
-- Most common mood
+- Most common mood across all entries
 - Current week's mood average
-- Longest writing streak
+- Longest writing streak (current + all-time)
 - Mood distribution bar chart
 - 30-day mood timeline visualization
 
 ### 🔍 Search
-- Full-text search through all entries
-- Results with highlighted matches
-- Chronological sorting
+- Full-text search through your entire journal
+- Results sorted chronologically
+- Matches highlighted
 
-### 🛡️ Privacy & Data
-- **100% local-first** — everything stays in your browser's localStorage
-- **No accounts** — no signup, no email, no password
-- **Zero tracking** — no analytics, no cookies, no data collection
-- **No servers** — nothing leaves your device
-- **Export/Import** — full JSON backup at any time
+### 📜 On This Day
+- Shows entries from past years on the same date
+- A quiet reminder of where you were
 
-### 🎨 Design
-- Clean, warm, minimal aesthetic
-- Light, dark, and system-follow themes
-- Fully responsive (mobile, tablet, desktop)
-- Smooth animations and transitions
+### ⚙️ Settings
+- Light / Dark / System theme
+- JSON export & import (full data portability)
+- Markdown export
+- Clear all data
+
+### 🛡️ Privacy
+Your data lives in your browser. That's it. No servers, no sync, no accounts, no analytics, no cookies, no tracking. You own it completely. Export anytime. Verify in DevTools.
+
+## Quick Start
+
+**Option A — Open directly:**
+```bash
+open index.html
+```
+
+**Option B — Serve locally:**
+```bash
+python3 -m http.server 8080
+# Open http://localhost:8080
+```
+
+**Option C — Deploy anywhere:**
+Static files. Drop `liner/` on GitHub Pages, Netlify, a USB stick, or email it to yourself.
 
 ## Usage
 
-### Quick Start
-1. Open `index.html` in any modern browser
-2. Write one thing worth remembering today
-3. Tap a mood emoji
-4. Click Save — done
+1. Write one thing worth remembering
+2. Tap a mood emoji
+3. Optionally add a photo
+4. Click Save — 5 seconds total
 
-### Keyboard-friendly
-- Just start typing in the textarea
-- Click the mood emoji that matches your vibe
-- Save and move on with your day
+That's it. Come back tomorrow. Over time, see your patterns emerge in the insights dashboard.
 
-## Privacy Guarantee
+## Technical
 
-```
-┌──────────────────────────────────────┐
-│  YOUR DATA LIVES HERE → localStorage │
-│                                      │
-│  ● No cloud sync                     │
-│  ● No analytics                      │
-│  ● No cookies                        │
-│  ● No servers                        │
-│  ● No accounts                       │
-│  ● No exfiltration                   │
-│                                      │
-│  You own it. You control it.         │
-└──────────────────────────────────────┘
-```
+| Aspect | Detail |
+|--------|--------|
+| **Stack** | Vanilla HTML/CSS/JS — 0 dependencies, 0 build step |
+| **Storage** | IndexedDB (50%+ of disk available, no practical limit) |
+| **Size** | ~112KB, 10 files |
+| **Format** | Each entry = date + text + mood + optional photo |
+| **Security** | CSP headers, no external requests, no cookies |
+| **Compatibility** | All modern browsers, PWA-installable |
 
-To verify: open DevTools → Application → Local Storage → `liner_entries`. That's your entire dataset. Nothing else exists.
-
-## Technical Details
-
-- **Stack:** Vanilla HTML/CSS/JS — zero dependencies, zero build step
-- **Storage:** Browser localStorage (up to ~5MB, ~10,000 entries)
-- **Compatibility:** All modern browsers (Chrome, Firefox, Safari, Edge)
-- **Deploy:** Serve as static files anywhere (GitHub Pages, Netlify, local, USB stick)
-
-### File Structure
 ```
 liner/
-├── index.html    # App shell
-├── css/
-│   └── app.css   # All styles
+├── index.html
+├── manifest.json        # PWA manifest
+├── sw.js                # Service worker (offline support)
+├── css/app.css
 ├── js/
-│   ├── utils.js  # Date, mood, string utilities
-│   ├── db.js     # localStorage document store
-│   ├── ui.js     # DOM rendering helpers
-│   └── app.js    # Main application controller
-└── README.md     # This file
+│   ├── app.js           # Main controller
+│   ├── db.js            # IndexedDB document store
+│   ├── ui.js            # DOM rendering
+│   └── utils.js         # Date, mood, string helpers
+├── icons/
+│   ├── icon-192.svg
+│   ├── icon-512.svg
+│   └── README.md
+├── POSITIONING.md       # Market research & strategy
+└── README.md
 ```
 
-## Why "Liner"?
+## Data Portability
 
-One line at a time. No pressure to write paragraphs. Just a single thought, observation, or memory per day. Over time, those lines become a quiet record of your life — without the noise.
+- **Export JSON** — full backup, machine-readable
+- **Export Markdown** — human-readable, importable anywhere
+- **Import JSON** — restore from backup or migrate from another app
+
+Your data is yours. No lock-in, no proprietary format.
 
 ---
 
-*Built for peace of mind. June 2026.*
+## The Mission
+
+Journaling shouldn't require trust. You shouldn't have to hand over your thoughts to a company that monetizes attention. You shouldn't need a subscription to remember your own life.
+
+Liner is the quiet alternative. Write. Save. Move on. The insights come later — and they stay on your device.
+
+*Built for peace of mind. July 2026.*
