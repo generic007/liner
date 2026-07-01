@@ -1,0 +1,12 @@
+{
+  "name": "Liner — Daily Micro-Journal",
+  "short_name": "Liner",
+  "description": "A private, local-first daily micro-journal. One line a day, mood tracking, photos.",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#f5f0eb",
+  "theme_color": "#f5f0eb",
+  "orientation": "portrait-primary",
+  "categories": ["lifestyle", "productivity", "health"],
+  "lang": "en-US"
+}

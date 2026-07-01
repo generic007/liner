@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="system">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="A private, local-first daily micro-journal. One line a day. Yours only.">
+  <meta name="theme-color" content="#f5f0eb" id="theme-meta">
+  <meta name="color-scheme" content="light dark">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Liner">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📝</text></svg>">
+  <title>Liner — Daily Micro-Journal</title>
+  <link rel="stylesheet" href="css/app.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📝</text></svg>">
+</head>
+<body>
+  <!-- App Shell -->
+  <div id="app" class="app">
+    <!-- Sidebar Overlay (mobile) -->
+    <div id="sidebar-overlay" class="sidebar-overlay" onclick="app.closeSidebar()"></div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-header">
+        <span class="sidebar-logo">📝 Liner</span>
+        <span class="sidebar-version">v1.0</span>
+      </div>
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-view="today" onclick="app.switchView('today')">
+          <span class="nav-icon">✏️</span>
+          <span>Today</span>
+        </button>
+        <button class="nav-item" data-view="calendar" onclick="app.switchView('calendar')">
+          <span class="nav-icon">📅</span>
+          <span>Calendar</span>
+        </button>
+        <button class="nav-item" data-view="mood" onclick="app.switchView('mood')">
+          <span class="nav-icon">📊</span>
+          <span>Mood Insights</span>
+        </button>
+        <button class="nav-item" data-view="search" onclick="app.switchView('search')">
+          <span class="nav-icon">🔍</span>
+          <span>Search</span>
+        </button>
+        <button class="nav-item" data-view="settings" onclick="app.switchView('settings')">
+          <span class="nav-icon">⚙️</span>
+          <span>Settings</span>
+        </button>
+      </nav>
+      <div class="sidebar-stats">
+        <div class="stat-item">
+          <span class="stat-label">Entries</span>
+          <span class="stat-value" id="stat-entries">0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Streak</span>
+          <span class="stat-value" id="stat-streak">0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Total Days</span>
+          <span class="stat-value" id="stat-total-days">0</span>
+        </div>
+      </div>
+      <button class="sidebar-export-btn" onclick="app.exportData()">
+        📦 Export All Data
+      </button>
+    </aside>
+
+    <!-- Main Content -->
+    <main id="main-content" class="main-content">
+      <!-- Top Bar -->
+      <header class="top-bar">
+        <button class="hamburger" id="hamburger" onclick="app.toggleSidebar()" aria-label="Toggle menu">
+          <span></span><span></span><span></span>
+        </button>
+        <h1 id="view-title" class="view-title">Today</h1>
+        <button class="theme-toggle" onclick="app.cycleTheme()" id="theme-btn" aria-label="Toggle theme">
+          🌓
+        </button>
+      </header>
+
+      <!-- View: Today -->
+      <section id="view-today" class="view active">
+        <div class="today-card">
+          <div class="today-date" id="today-date"></div>
+
+          <!-- Daily Prompt -->
+          <div class="daily-prompt" id="daily-prompt-container">
+            <span class="prompt-icon">💡</span>
+            <span class="prompt-text" id="daily-prompt"></span>
+          </div>
+
+          <div class="mood-selector" id="mood-selector">
+            <button class="mood-btn" data-mood="amazing" onclick="app.setMood('amazing')" title="Amazing">🤩</button>
+            <button class="mood-btn" data-mood="great" onclick="app.setMood('great')" title="Great">😄</button>
+            <button class="mood-btn" data-mood="good" onclick="app.setMood('good')" title="Good">🙂</button>
+            <button class="mood-btn" data-mood="okay" onclick="app.setMood('okay')" title="Okay">😐</button>
+            <button class="mood-btn" data-mood="meh" onclick="app.setMood('meh')" title="Meh">😕</button>
+            <button class="mood-btn" data-mood="stressed" onclick="app.setMood('stressed')" title="Stressed">😤</button>
+            <button class="mood-btn" data-mood="tired" onclick="app.setMood('tired')" title="Tired">🥱</button>
+            <button class="mood-btn" data-mood="bad" onclick="app.setMood('bad')" title="Bad">😢</button>
+          </div>
+
+          <!-- Photo Area -->
+          <div class="photo-section">
+            <label for="photo-input" class="photo-btn">
+              <span class="photo-icon">📷</span> Add Photo
+            </label>
+            <input type="file" id="photo-input" accept="image/*" onchange="app.handlePhoto(this.files[0])" style="display:none">
+            <div id="photo-preview" class="photo-preview hidden" style="display:none">
+              <img id="photo-preview-img" class="photo-preview-img" alt="Entry photo">
+              <button id="photo-remove" class="photo-remove-btn" onclick="app.removePhoto()" aria-label="Remove photo">✕</button>
+            </div>
+          </div>
+
+          <div class="entry-area">
+            <textarea
+              id="entry-text"
+              class="entry-textarea"
+              placeholder="What's one thing worth remembering today?"
+              maxlength="500"
+              rows="3"
+              oninput="app.onEntryChange()"
+            ></textarea>
+            <div class="entry-footer">
+              <span class="char-count" id="char-count">0 / 500</span>
+              <div class="entry-actions">
+                <button class="btn btn-secondary" id="btn-clear" onclick="app.clearEntry()" disabled>Clear</button>
+                <button class="btn btn-primary" id="btn-save" onclick="app.saveEntry()" disabled>Save</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- On This Day -->
+        <div id="on-this-day" class="on-this-day" style="display:none"></div>
+
+        <div class="today-history">
+          <h2 class="section-title">📜 Recent Entries</h2>
+          <div id="recent-entries" class="recent-entries">
+            <div class="empty-state">
+              <p>No entries yet. Start writing!</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- View: Calendar -->
+      <section id="view-calendar" class="view">
+        <div class="calendar-nav">
+          <button class="btn btn-icon" onclick="app.calendarNav(-1)" aria-label="Previous month">◀</button>
+          <h2 id="calendar-month-label" class="calendar-month-label"></h2>
+          <button class="btn btn-icon" onclick="app.calendarNav(1)" aria-label="Next month">▶</button>
+        </div>
+        <div class="calendar-grid-header">
+          <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+        </div>
+        <div id="calendar-grid" class="calendar-grid"></div>
+        <div id="calendar-day-detail" class="calendar-day-detail" style="display:none">
+          <button class="btn btn-secondary btn-sm" onclick="app.calendarClearDetail()">✕ Close</button>
+          <div id="calendar-detail-content"></div>
+        </div>
+      </section>
+
+      <!-- View: Mood Insights -->
+      <section id="view-mood" class="view">
+        <div class="insights-summary">
+          <div class="insight-card"><span class="insight-label">Most Common</span><span class="insight-value" id="insight-common">—</span></div>
+          <div class="insight-card"><span class="insight-label">This Week</span><span class="insight-value" id="insight-week">—</span></div>
+          <div class="insight-card"><span class="insight-label">Best Streak</span><span class="insight-value" id="insight-streak">—</span></div>
+        </div>
+        <h3>Mood Distribution</h3>
+        <div id="mood-bars" class="mood-bars"></div>
+        <h3>Mood Timeline (Last 30 Days)</h3>
+        <div id="mood-timeline" class="mood-timeline"></div>
+      </section>
+
+      <!-- View: Search -->
+      <section id="view-search" class="view">
+        <div class="search-bar">
+          <input type="text" id="search-input" class="search-input" placeholder="Search your entries..." oninput="app.doSearch(this.value)">
+        </div>
+        <div id="search-results" class="search-results">
+          <div class="empty-state">
+            <p>Type to search through your entries</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- View: Settings -->
+      <section id="view-settings" class="view">
+        <div class="settings-section">
+          <h3>Data</h3>
+          <div class="setting-row">
+            <span>Your data lives only on this device. No servers, no accounts, no tracking.</span>
+          </div>
+          <div class="setting-row">
+            <button class="btn btn-secondary" onclick="app.exportData()">📦 Export as JSON</button>
+            <button class="btn btn-secondary" onclick="app.exportMarkdown()">📄 Export as Markdown</button>
+            <label class="btn btn-secondary" for="import-file">📥 Import JSON</label>
+            <input type="file" id="import-file" accept=".json" style="display:none" onchange="app.importData(event)">
+          </div>
+          <div class="setting-row danger-zone">
+            <span class="danger-label">Danger Zone</span>
+            <button class="btn btn-danger" onclick="app.confirmDeleteAll()">🗑️ Delete All Entries</button>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h3>Appearance</h3>
+          <div class="setting-row">
+            <label for="theme-select">Theme</label>
+            <select id="theme-select" onchange="app.setTheme(this.value)">
+              <option value="system">System</option>
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h3>About Liner</h3>
+          <div class="setting-row about-text">
+            <p>Liner is a private, local-first micro-journal. One line a day. No accounts, no cloud, no tracking. Your thoughts stay on your device.</p>
+            <p><strong>Data Privacy:</strong> Everything is stored in your browser's IndexedDB. You own your data. Export it anytime. Nothing is sent anywhere.</p>
+            <p class="version-text">v2.0 — Merged with insight and strength.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Confirm Modal -->
+  <div id="modal-overlay" class="modal-overlay" style="display:none" onclick="app.closeModal()">
+    <div class="modal" onclick="event.stopPropagation()">
+      <h3 id="modal-title">Confirm</h3>
+      <p id="modal-text">Are you sure?</p>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="app.closeModal()">Cancel</button>
+        <button class="btn btn-danger" id="modal-confirm-btn" onclick="app.closeModal()">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast" role="alert"></div>
+
+  <script src="js/utils.js"></script>
+  <script src="js/db.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/app.js"></script>
+
+  <!-- Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').catch(function(err) {
+        console.warn('Service worker registration failed:', err);
+      });
+    }
+  </script>
+</body>
+</html>
